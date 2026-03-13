@@ -1,0 +1,49 @@
+services:
+  vprodb:
+    build:
+      context: ./Docker-files/db
+    image: jodocx/demo_db
+    container_name: vprofiledb
+    ports:
+      - "3306:3306"
+    volumes:
+      - vprodbdata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+
+  vprocache01:
+    image: memcached
+    container_name: vprocache01
+    ports:
+      - "11211:11211"
+
+  vpromq01:
+    image: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQDEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+
+  vproapp:
+    image: jodocx/demo_service
+    container_name: backenapp
+    build:
+      context: ./Docker-files/app
+    ports:
+      - "8080:8080"
+    volumes:
+      - vproappdata:/usr/local/tomcat/webapps
+
+  vproweb:
+    image: jodocx/demo_web
+    build:
+      context: ./Docker-files/web
+    ports:
+      - "80:80"
+    container_name: vproweb
+
+volumes:
+  vprodbappdata: {}
+  vprodbdata: {} 
+
